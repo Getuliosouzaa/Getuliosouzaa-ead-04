@@ -1,95 +1,87 @@
-class Salario {
-    /**
-     * @param {number} pSalarioBruto
-     */
-    constructor(pSalarioBruto){
-      
-        // Parametros 
 
+class Salario{    
+    
+    constructor(pSalarioBruto){
+        
         this._salarioBruto = undefined;
         this._descontoINSS = undefined;
-        this._descontoIRRF = undefined;
+        this._descontoIRPF = undefined;
         
         this._validarValor(pSalarioBruto);
         this._salarioBruto = pSalarioBruto;
-        this.descontoINSS;
-        this.descontoIRPF;
-        Object.freeze(this);        
-
-    }
-
-    // VALIDAÇÂO DOS PARAMETROS.
-
+        
+        this._calculos();
+        this._calculosIR();
+        this. _retorno()
+        
+        Object.freeze(this);
+    }    
     _validarValor(valor){
         if (typeof valor !== 'number' || valor < 0){
             throw new Error('O salario dever ser maior ou igual a zero!!');
         }
     }
-
-// Saida de dados Os Gets
-
-    get salarioBruto(){
-        return this._salarioBruto;
-    }
-    get descontoINSS(){
+    
+// Caculos INSS
+    _calculos() {
         if(this._salarioBruto <= 1693.72){
-            this._descontoINSS = Number((this._salarioBruto * 0.08).toFixed(2));
-            return this._descontoINSS;
+            return this._desINSS = this._salarioBruto * 0.08;
         }
-        else{
-            if(this._salarioBruto <=2822.90){
-                this._descontoINSS = Number((this._salarioBruto * 0.09).toFixed(2));
-                return this._descontoINSS;
-            }
-            else{
-                if(this._salarioBruto <=5645.80){
-                    this._descontoINSS = Number((this._salarioBruto * 0.11).toFixed(2));
-                    return this._descontoINSS;
-                }
-                else{
-                    this._descontoINSS = 621.04;
-                    return this._descontoINSS;
-                }
-            }
+        if(this._salarioBruto > 1693.72 && this._salarioBruto <=2822.90){
+            return this._desINSS =  this._salarioBruto * 0.09;
+        }
+        if(this._salarioBruto > 2822.90 && this._salarioBruto <= 5645.80){
+            return this._desINSS =  this._salarioBruto * 0.11;
+        }else {
+            return this._desINSS =  621.04;
+        }
+        
+        
+    }
+    
+// Calculos IRPF
+    _calculosIR(){
+        this._baseIRPF= this._salarioBruto - this._desINSS;
+
+        if(this._baseIRPF >= 1903.99 && this._baseIRPF <= 2826.65){
+            this._descontoIRPF= this._baseIRPF * 0.075;
+            return this._deducaoIRPF =this._descontoIRPF - 142.80;
+        }
+        if(this._baseIRPF > 2826.65 && this._baseIRPF <= 3751.05){
+            this._descontoIRPF= this._baseIRPF * 0.15;
+            return  this._deducaoIRPF = this._descontoIRPF - 354.80;
+            
+        }
+        if(this._baseIRPF > 3751.05 && this._baseIRPF <= 4664.68){
+            this._descontoIRPF= this._baseIRPF * 0.225;
+            return  this._deducaoIRPF = this._descontoIRPF - 636.13; 
+            
+        }else{
+            this._descontoIRPF= this._baseIRPF * 0.275;
+            return  this._deducaoIRPF = this._descontoIRPF - 869.36;
+            
         }
     }
- get descontoIRPF(){
-    let baseCalculo = this._salarioBruto-this._descontoINSS
-    if(baseCalculo <= 1903.98){
-         this._descontoIRRF = 0.00;
-            return this._descontoIRRF;
- }
-
-  else{
-    if(baseCalculo <= 2826.65){
-         this._descontoIRRF = Number(((baseCalculo *0.075)-142.80).toFixed(2));
-        return this._descontoIRRF;
- }
-  else{
-     if(baseCalculo <=3751.05){
-      this._descontoIRRF = Number(((baseCalculo *0.15)-354.80).toFixed(2));
-         return this._descontoIRRF;
- }
-    else{
-        if(baseCalculo <=4664.68){
-         this._descontoIRRF = Number(((baseCalculo *0.225)-636.13).toFixed(2));
-            return this._descontoIRRF;
-}
-        else{
-            this._descontoIRRF = Number(((baseCalculo *0.275)-869.36).toFixed(2));
-         return this._descontoIRRF;
-     }
-   }
- }
-}
-
-}
-
-    get totalDescontos(){
-        return this._descontoINSS + this._descontoIRRF;
+    
+    _retorno(){
+         return this.salLiquido = this._salarioBruto - this._desINSS - this._deducaoIRPF;
+        
     }
-    get salarioLiquido(){
-        return this._salarioBruto - this._descontoINSS - this._descontoIRRF;
-
-    }
+  
+// GETS
+get salarioBruto(){
+    return this._salarioBruto;
+}
+get descontoINSS(){
+    return Number (this._desINSS.toFixed(2));   
+}
+get descontoIRPF(){
+    return Number (this._deducaoIRPF.toFixed(2));   
+}
+get totalDescontos(){
+    return Number ((this._desINSS + this._deducaoIRPF).toFixed(2));   
+}
+get salarioLiquido(){
+    return Number (this.salLiquido.toFixed(2));
+}
 }
